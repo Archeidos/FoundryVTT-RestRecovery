@@ -84,13 +84,14 @@ export default class RestWorkflow {
       if (!data.flags?.["rest-recovery"]?.data) return;
       console.log("FOOD HOOK");
       const rest = RestWorkflow.get(actor);
+      if (rest === undefined) return;
       const consumedItems = rest.consumableData.items;
 
       for (let item of consumedItems) {
         console.log("mbt123 Item used:");
         console.log(item);
 
-        // item.item.use();
+        item.item.use();
         // const effect = item.item.effects.contents[0];
         // actor.createEmbeddedDocuments("ActiveEffect", [effect]);
         // // Check if this item has an attached MIDI workflow.
