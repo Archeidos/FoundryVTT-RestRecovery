@@ -60,7 +60,7 @@ export default class RestWorkflow {
     }).filter(entry => entry[1]));
   }
 
-  static initialize() {
+  async static initialize() {
 
     CONFIG.DND5E.consumableTypes.food.subtypes = {
       food: "REST-RECOVERY.Misc.Food",
@@ -73,8 +73,23 @@ export default class RestWorkflow {
     });
 
     Hooks.on("preUpdateActor", (actor, data) => {
-      if (!lib.getSetting(CONSTANTS.SETTINGS.AUTOMATE_EXHAUSTION)) return;
+      if (!data.flags?.["rest-recovery"]?.data) return;
+      console.log("FOOD HOOK");
       const rest = RestWorkflow.get(actor);
+      const consumedItems = rest.consumableData.items;
+
+      for (let item of consumedItems) {
+        console.log("mbt123");
+        console.log(item);
+
+        // Check if this item has an attached MIDI workflow.
+        // Adjust the flag and workflow function name as needed.
+        if (item.item.flags?.["midi-qol"].onUseMacroParts) {
+          MidiQOL.completeItemUse(actor, item.item, { actor });
+        }
+      }
+
+      if (!lib.getSetting(CONSTANTS.SETTINGS.AUTOMATE_EXHAUSTION)) return;
       const exhaustion = rest?.newExhaustionValue ?? foundry.utils.getProperty(data, "system.attributes.exhaustion");
       if (exhaustion === undefined) return;
       return plugins.handleExhaustion(actor, data);
@@ -113,7 +128,7 @@ export default class RestWorkflow {
       const rollFormula = getSetting(CONSTANTS.SETTINGS.HIT_DIE_ROLL_FORMULA);
       const isMaxed = (rollFormula === CONSTANTS.ROLL_FORMULAS.MAXIMIZED) || forceMaxRoll;
 
-				
+
       const hdMult = lib.determineMultiplier(CONSTANTS.SETTINGS.HD_EFFECTIVE_MULTIPLIER);
 
 			let formula = "1" + denomination;
@@ -125,7 +140,7 @@ export default class RestWorkflow {
 			if (isMaxed) {
 				formula = denomination.slice(1);
 			}
-			
+
       if (hasBlackBlood && !isMaxed) {
         formula += "r<3";
       }
@@ -202,7 +217,7 @@ export default class RestWorkflow {
               if (permissions < 3) continue;
               const allPlayers = game.users.filter(user => !user.isGM);
               if (!allPlayers.length) continue;
-              potentialActors[currActor.uuid] = allPlayers; 
+              potentialActors[currActor.uuid] = allPlayers;
               break;
             }
             const user = game.users.get(userId);
@@ -246,22 +261,22 @@ export default class RestWorkflow {
       }
 
       let workflow = RestWorkflow.make(actor, false, config);
-      
+
       if (!config.dialog) return true;
-      
+
       workflow.then((workflow) => {
-  
+
         const hd0 = actor.system.attributes.hd.value;
         const hp0 = actor.system.attributes.hp.value;
-  
+
         ShortRestDialog.show({ ...config, actor }).then(async (newDay) => {
-  
+
           config.newDay = newDay;
 
           if (workflow._shouldRollForFoodWaterExhaustion()) {
-  
+
             const halfWaterSaveDC = lib.getSetting(CONSTANTS.SETTINGS.HALF_WATER_SAVE_DC);
-  
+
             workflow.exhaustionRoll = await actor.rollAbilitySave("con", {
               targetValue: halfWaterSaveDC,
               fastForward: false
@@ -273,12 +288,12 @@ export default class RestWorkflow {
               });
             }
           }
-  
+
           const hitDice = actor.system.attributes.hd.value - hd0;
           const hitPoints = actor.system.attributes.hp.value - hp0;
-  
+
           return actor._rest(config, {deltas: {hitDice, hitPoints}});
-  
+
         });
       });
       return false;
@@ -295,7 +310,7 @@ export default class RestWorkflow {
               if (permissions < 3) continue;
               const allPlayers = game.users.filter(user => !user.isGM);
               if (!allPlayers.length) continue;
-              potentialActors[currActor.uuid] = allPlayers; 
+              potentialActors[currActor.uuid] = allPlayers;
               break;
             }
             const user = game.users.get(userId);
@@ -344,13 +359,13 @@ export default class RestWorkflow {
 
       workflow.then((workflow) => {
         LongRestDialog.show({ ...config, actor }).then(async (newDay) => {
-  
+
           config.newDay = newDay;
-  
+
           if (workflow._shouldRollForFoodWaterExhaustion()) {
-  
+
             const halfWaterSaveDC = lib.getSetting(CONSTANTS.SETTINGS.HALF_WATER_SAVE_DC);
-  
+
             workflow.exhaustionRoll = await actor.rollAbilitySave("con", {
               targetValue: halfWaterSaveDC,
               fastForward: false
@@ -362,9 +377,9 @@ export default class RestWorkflow {
               });
             }
           }
-  
+
           return actor._rest(config);
-  
+
         });
       });
 
@@ -1022,7 +1037,7 @@ export default class RestWorkflow {
   _shouldRollForFoodWaterExhaustion() {
 
     if (!lib.getSetting(CONSTANTS.SETTINGS.ENABLE_FOOD_AND_WATER)) return false;
-    
+
     if (!lib.getSetting(CONSTANTS.SETTINGS.AUTOMATE_FOODWATER_EXHAUSTION)) return false;
 
     if (lib.getSetting(CONSTANTS.SETTINGS.FOODWATER_PROMPT_NEWDAY)) {
