@@ -74,12 +74,13 @@ export default class RestWorkflow {
 
     Hooks.on("preUpdateActor", (actor, data) => {
       if (!lib.getSetting(CONSTANTS.SETTINGS.AUTOMATE_EXHAUSTION)) return;
+      const rest = RestWorkflow.get(actor);
       const exhaustion = rest?.newExhaustionValue ?? foundry.utils.getProperty(data, "system.attributes.exhaustion");
       if (exhaustion === undefined) return;
       return plugins.handleExhaustion(actor, data);
     });
 
-    Hooks.on("preUpdateActor", async (actor, data) => {
+    Hooks.on("preUpdateActor", (actor, data) => {
       if (!data.flags?.["rest-recovery"]?.data) return;
       console.log("FOOD HOOK");
       const rest = RestWorkflow.get(actor);
@@ -89,7 +90,7 @@ export default class RestWorkflow {
         console.log("mbt123 Item used:");
         console.log(item);
 
-        await item.item.use();
+        item.item.use();
         // const effect = item.item.effects.contents[0];
         // actor.createEmbeddedDocuments("ActiveEffect", [effect]);
         // // Check if this item has an attached MIDI workflow.
