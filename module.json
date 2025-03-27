@@ -85,7 +85,7 @@
     }
   ],
   "socket": true,
-  "url": "https://github.com/roth-michael/FoundryVTT-RestRecovery",
-  "manifest": "https://github.com/roth-michael/FoundryVTT-RestRecovery/releases/latest/download/module.json",
-  "download": "https://github.com/roth-michael/FoundryVTT-RestRecovery/releases/latest/download/module.zip"
+  "url": "https://github.com/Archeidos/FoundryVTT-RestRecovery",
+  "manifest": "https://github.com/Archeidos/FoundryVTT-RestRecovery/releases/latest/download/module.json",
+  "download": "https://github.com/Archeidos/FoundryVTT-RestRecovery/releases/latest/download/module.zip"
 }
