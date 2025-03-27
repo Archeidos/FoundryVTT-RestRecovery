@@ -176,4 +176,8 @@ export default class API {
     });
     return true;
   }
+
+  static RestWorkflow() {
+    return RestWorkflow
+  }
 }
