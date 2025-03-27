@@ -82,23 +82,20 @@ export default class RestWorkflow {
         console.log("mbt123");
         console.log(item);
 
-        const effectsArray = Array.from(item.effects);
-        const firstEffect = effectsArray[0];
-        const effect = firstEffect?.value;
-        actor.createEmbeddedDocuments("ActiveEffect", [effect]);
+        // const effectsArray = Array.from(item.effects);
+        // const firstEffect = effectsArray[0];
+        // const effect = firstEffect?.value;
+        // actor.createEmbeddedDocuments("ActiveEffect", [effect]);
         // Check if this item has an attached MIDI workflow.
         // Adjust the flag and workflow function name as needed.
-        // if (item.item.flags?.["midi-qol"].onUseMacroParts) {
-        //   // const activitiesArray = Object.values(item.item.system.activities);
-        //   // if (activitiesArray.length > 0) {
-        //   //   const activity = activitiesArray[0].value;
-        //   //   activity.target.affects.type = "self";
-        //   //   MidiQOL.Workflow(actor, activity, actor, activity.target.affects.type);
-        //   // } else {
-        //   //   console.warn("No activities found");
-        //   // }
-        // }
-      }
+        if (item.item.flags?.["midi-qol"].onUseMacroParts) {
+            item.item.system.activities.contents.target.affects.type = "self";
+            const activity = item.item.system.activities.contents;
+            MidiQOL.Workflow(actor, activity, actor, activity.target.affects.type);
+          } else {
+            console.warn("No activities found");
+          }
+        }
 
       if (!lib.getSetting(CONSTANTS.SETTINGS.AUTOMATE_EXHAUSTION)) return;
       const exhaustion = rest?.newExhaustionValue ?? foundry.utils.getProperty(data, "system.attributes.exhaustion");
