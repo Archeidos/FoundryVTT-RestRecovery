@@ -90,7 +90,7 @@ export default class RestWorkflow {
         console.log("mbt123 Item used:");
         console.log(item);
 
-        item.item.use();
+        // item.item.use();
         // const effect = item.item.effects.contents[0];
         // actor.createEmbeddedDocuments("ActiveEffect", [effect]);
         // // Check if this item has an attached MIDI workflow.
