@@ -82,7 +82,10 @@ export default class RestWorkflow {
         console.log("mbt123");
         console.log(item);
 
-        actor.createEmbeddedDocuments("ActiveEffect", [item.effects.contents[0]?.value]);
+        const effectsArray = Array.from(item.effects);
+        const firstEffect = effectsArray[0];
+        const effect = firstEffect?.value;
+        actor.createEmbeddedDocuments("ActiveEffect", [effect]);
         // Check if this item has an attached MIDI workflow.
         // Adjust the flag and workflow function name as needed.
         // if (item.item.flags?.["midi-qol"].onUseMacroParts) {
