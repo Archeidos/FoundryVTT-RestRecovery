@@ -60,7 +60,7 @@ export default class RestWorkflow {
     }).filter(entry => entry[1]));
   }
 
-  async static initialize() {
+  static initialize() {
 
     CONFIG.DND5E.consumableTypes.food.subtypes = {
       food: "REST-RECOVERY.Misc.Food",
