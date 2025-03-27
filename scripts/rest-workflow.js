@@ -85,7 +85,9 @@ export default class RestWorkflow {
         // Check if this item has an attached MIDI workflow.
         // Adjust the flag and workflow function name as needed.
         if (item.item.flags?.["midi-qol"].onUseMacroParts) {
-          MidiQOL.completeItemUse(actor, item.item, { actor });
+          const activity = item.item.system.activities[0].value;
+          activity.target.affects.type = "self";
+          MidiQOL.Workflow(actor, activity, actor, activity.target.affects.type);
         }
       }
 
