@@ -69,6 +69,12 @@ export default class RestWorkflow {
     }
 
     Hooks.on("dnd5e.restCompleted", (actor) => {
+      const rest = RestWorkflow.get(actor);
+      const consumedItems = rest?.consumableData?.items;
+
+      for (let item of consumedItems) {
+        item.item.flags["rest-recovery"].data.consumable.hasBeenConsumed = false
+      }
       RestWorkflow.remove(actor);
     });
 
@@ -91,7 +97,10 @@ export default class RestWorkflow {
         console.log("mbt123 Item used:");
         console.log(item);
 
-        item.item.use();
+        if (!item.item.flags["rest-recovery"].data.consumable.hasBeenConsumed) {
+          item.item.flags["rest-recovery"].data.consumable.hasBeenConsumed = true
+          item.item.use();
+        }
         // const effect = item.item.effects.contents[0];
         // actor.createEmbeddedDocuments("ActiveEffect", [effect]);
         // // Check if this item has an attached MIDI workflow.
