@@ -73,32 +73,35 @@ export default class RestWorkflow {
     });
 
     Hooks.on("preUpdateActor", (actor, data) => {
+      if (!lib.getSetting(CONSTANTS.SETTINGS.AUTOMATE_EXHAUSTION)) return;
+      const exhaustion = rest?.newExhaustionValue ?? foundry.utils.getProperty(data, "system.attributes.exhaustion");
+      if (exhaustion === undefined) return;
+      return plugins.handleExhaustion(actor, data);
+    });
+
+    Hooks.on("preUpdateActor", async (actor, data) => {
       if (!data.flags?.["rest-recovery"]?.data) return;
       console.log("FOOD HOOK");
       const rest = RestWorkflow.get(actor);
       const consumedItems = rest.consumableData.items;
 
       for (let item of consumedItems) {
-        console.log("mbt123");
+        console.log("mbt123 Item used:");
         console.log(item);
 
-        const effect = item.item.effects.contents[0];
-        actor.createEmbeddedDocuments("ActiveEffect", [effect]);
-        // Check if this item has an attached MIDI workflow.
-        // Adjust the flag and workflow function name as needed.
-        if (item.item.flags?.["midi-qol"].onUseMacroParts) {
-            // item.item.system.activities.contents.target.affects.type = "self";
-            const activity = item.item.system.activities.contents;
-            new MidiQOL.Workflow(actor, activity, actor, [actor]);
-          } else {
-            console.warn("No activities found");
-          }
-        }
-
-      if (!lib.getSetting(CONSTANTS.SETTINGS.AUTOMATE_EXHAUSTION)) return;
-      const exhaustion = rest?.newExhaustionValue ?? foundry.utils.getProperty(data, "system.attributes.exhaustion");
-      if (exhaustion === undefined) return;
-      return plugins.handleExhaustion(actor, data);
+        await item.item.use();
+        // const effect = item.item.effects.contents[0];
+        // actor.createEmbeddedDocuments("ActiveEffect", [effect]);
+        // // Check if this item has an attached MIDI workflow.
+        // // Adjust the flag and workflow function name as needed.
+        // if (item.item.flags?.["midi-qol"].onUseMacroParts) {
+        //     // item.item.system.activities.contents.target.affects.type = "self";
+        //     const activity = item.item.system.activities.contents;
+        //     new MidiQOL.Workflow(actor, activity, actor, [actor]);
+        //   } else {
+        //     console.warn("No activities found");
+        //   }
+      }
     });
 
     let cachedDenomination = false;
