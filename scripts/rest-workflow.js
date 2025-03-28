@@ -86,7 +86,8 @@ export default class RestWorkflow {
       return plugins.handleExhaustion(actor, data);
     });
 
-    Hooks.on("preUpdateActor", (actor, data) => {
+    // Auto apply food effect hook
+    Hooks.on("preUpdateActor", async (actor, data) => {
       if (!data.flags?.["rest-recovery"]?.data) return;
       console.log("FOOD HOOK");
       const rest = RestWorkflow.get(actor);
@@ -99,19 +100,8 @@ export default class RestWorkflow {
 
         if (!item.item.flags["rest-recovery"].data.consumable.hasBeenConsumed) {
           item.item.flags["rest-recovery"].data.consumable.hasBeenConsumed = true
-          item.item.use();
+          await item.item.use();
         }
-        // const effect = item.item.effects.contents[0];
-        // actor.createEmbeddedDocuments("ActiveEffect", [effect]);
-        // // Check if this item has an attached MIDI workflow.
-        // // Adjust the flag and workflow function name as needed.
-        // if (item.item.flags?.["midi-qol"].onUseMacroParts) {
-        //     // item.item.system.activities.contents.target.affects.type = "self";
-        //     const activity = item.item.system.activities.contents;
-        //     new MidiQOL.Workflow(actor, activity, actor, [actor]);
-        //   } else {
-        //     console.warn("No activities found");
-        //   }
       }
     });
 
