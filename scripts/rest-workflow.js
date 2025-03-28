@@ -73,7 +73,8 @@ export default class RestWorkflow {
       const consumedItems = rest?.consumableData?.items;
 
       for (let item of consumedItems) {
-        item.item.flags["rest-recovery"].data.consumable.hasBeenConsumed = false
+        console.log("mbt123 Item hasBeenConsumed reset to false");
+        item.item.flags["rest-recovery"].data.consumable.hasBeenConsumed = false;
       }
       RestWorkflow.remove(actor);
     });
@@ -87,7 +88,7 @@ export default class RestWorkflow {
     });
 
     // Auto apply food effect hook
-    Hooks.on("preUpdateActor", async (actor, data) => {
+    Hooks.on("preUpdateActor", (actor, data) => {
       if (!data.flags?.["rest-recovery"]?.data) return;
       console.log("FOOD HOOK");
       const rest = RestWorkflow.get(actor);
@@ -99,8 +100,8 @@ export default class RestWorkflow {
         console.log(item);
 
         if (!item.item.flags["rest-recovery"].data.consumable.hasBeenConsumed) {
-          item.item.flags["rest-recovery"].data.consumable.hasBeenConsumed = true
-          await item.item.use();
+          item.item.flags["rest-recovery"].data.consumable.hasBeenConsumed = true;
+          item.item.use();
         }
       }
     });
